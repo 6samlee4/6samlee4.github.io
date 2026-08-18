@@ -3,30 +3,924 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="Portfolio of Sam Lee, MEng Aerospace Engineering graduate and RPC-L1 remote pilot specialising in UAV development, flight testing and data analysis."
+  >
+
   <title>Sam Lee | UAV & Aerospace Engineering</title>
+
+  <style>
+    :root {
+      --navy: #071b33;
+      --navy-light: #0d2a4d;
+      --blue: #1677ff;
+      --blue-light: #eaf3ff;
+      --white: #ffffff;
+      --background: #f5f7fa;
+      --text: #162033;
+      --muted: #5f6b7a;
+      --border: #dfe5ec;
+      --success: #16794b;
+      --shadow: 0 12px 30px rgba(7, 27, 51, 0.09);
+      --radius: 16px;
+      --max-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      font-family:
+        Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(92%, var(--max-width));
+      margin: 0 auto;
+    }
+
+    /* Navigation */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 27, 51, 0.96);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+    }
+
+    nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo {
+      color: var(--white);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .logo span {
+      color: #67a8ff;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #dce9f8;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus {
+      color: var(--white);
+    }
+
+    /* Hero */
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(22, 119, 255, 0.32),
+          transparent 28%
+        ),
+        linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: var(--white);
+      padding: 110px 0 100px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -130px;
+      bottom: -210px;
+      width: 500px;
+      height: 500px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #9cc8ff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: clamp(2.7rem, 7vw, 5.3rem);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+    }
+
+    .hero h2 {
+      margin-top: 22px;
+      color: #d8e7f8;
+      font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+      font-weight: 500;
+    }
+
+    .hero-description {
+      max-width: 720px;
+      margin-top: 24px;
+      color: #b9cbe0;
+      font-size: 1.08rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 22px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-weight: 750;
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-primary {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .button-primary:hover {
+      background: #0768e5;
+    }
+
+    .button-secondary {
+      border-color: rgba(255, 255, 255, 0.32);
+      color: var(--white);
+    }
+
+    .button-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* General sections */
+
+    section {
+      padding: 88px 0;
+    }
+
+    .section-heading {
+      max-width: 720px;
+      margin-bottom: 42px;
+    }
+
+    .section-label {
+      color: var(--blue);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .section-heading h2 {
+      margin-top: 9px;
+      color: var(--navy);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+    }
+
+    .section-heading p {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    /* About */
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 34px;
+      align-items: start;
+    }
+
+    .about-copy {
+      background: var(--white);
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .about-copy p + p {
+      margin-top: 16px;
+    }
+
+    .details-card {
+      background: var(--navy);
+      color: var(--white);
+      padding: 34px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .detail {
+      padding: 17px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .detail:first-child {
+      padding-top: 0;
+    }
+
+    .detail:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .detail-label {
+      color: #91b6df;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .detail-value {
+      display: block;
+      margin-top: 4px;
+      font-weight: 650;
+    }
+
+    /* Projects */
+
+    .projects-section {
+      background: var(--white);
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .project-card {
+      position: relative;
+      display: flex;
+      min-height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(7, 27, 51, 0.06);
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+
+    .project-image {
+      display: flex;
+      height: 190px;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(7, 27, 51, 0.94),
+          rgba(22, 119, 255, 0.78)
+        );
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+    }
+
+    .project-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 27px;
+    }
+
+    .project-type {
+      color: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .project-card h3 {
+      margin-top: 10px;
+      color: var(--navy);
+      font-size: 1.28rem;
+      line-height: 1.3;
+    }
+
+    .project-card p {
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 20px;
+    }
+
+    .tag {
+      padding: 5px 9px;
+      background: var(--blue-light);
+      color: #075ab9;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .project-status {
+      margin-top: auto;
+      padding-top: 22px;
+      color: var(--success);
+      font-size: 0.83rem;
+      font-weight: 750;
+    }
+
+    .project-status.planned {
+      color: #8a5b00;
+    }
+
+    /* Skills */
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .skill-card {
+      background: var(--white);
+      padding: 25px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .skill-card h3 {
+      color: var(--navy);
+      font-size: 1.05rem;
+    }
+
+    .skill-card p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.91rem;
+    }
+
+    /* Qualifications */
+
+    .qualifications-section {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .qualifications-section .section-label {
+      color: #75b3ff;
+    }
+
+    .qualifications-section .section-heading h2 {
+      color: var(--white);
+    }
+
+    .qualifications-section .section-heading p {
+      color: #b9cbe0;
+    }
+
+    .qualification-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .qualification-card {
+      padding: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .qualification-card h3 {
+      font-size: 1.05rem;
+    }
+
+    .qualification-card p {
+      margin-top: 8px;
+      color: #b9cbe0;
+      font-size: 0.91rem;
+    }
+
+    /* Contact */
+
+    .contact-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      background: var(--white);
+      padding: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .contact-card h2 {
+      color: var(--navy);
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+    }
+
+    .contact-card p {
+      max-width: 640px;
+      margin-top: 10px;
+      color: var(--muted);
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .contact-actions .button-secondary {
+      border-color: var(--border);
+      color: var(--navy);
+    }
+
+    .contact-actions .button-secondary:hover {
+      background: var(--blue-light);
+    }
+
+    /* Footer */
+
+    footer {
+      background: #041426;
+      color: #aebfd2;
+      padding: 27px 0;
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 900px) {
+      .project-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .qualification-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-card {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 84px 0 78px;
+      }
+
+      section {
+        padding: 68px 0;
+      }
+
+      .project-grid,
+      .skills-grid,
+      .qualification-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-copy,
+      .details-card,
+      .contact-card {
+        padding: 25px;
+      }
+
+      .hero-actions,
+      .contact-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Sam Lee</h1>
-  <h2>MEng Aerospace Engineering Graduate | RPC-L1 Remote Pilot</h2>
+  <header>
+    <nav class="container" aria-label="Main navigation">
+      <a class="logo" href="#home">SAM <span>LEE</span></a>
 
-  <p>
-    I have practical experience in autonomous UAV integration, flight testing,
-    mission planning and flight-data analysis.
-  </p>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#qualifications">Qualifications</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <h2>Projects</h2>
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-content">
+        <span class="eyebrow">UAV Operations · Engineering · Autonomy</span>
 
-  <ul>
-    <li>Team Peryton Autonomous UAV</li>
-    <li>Solar-Powered Long-Endurance UAV</li>
-    <li>DJI Mini 3 Photogrammetry with OpenDroneMap</li>
-  </ul>
+        <h1>Sam Lee</h1>
 
-  <p>
-    <a href="https://www.linkedin.com/in/sam-lee-3b872b198/">
-      View my LinkedIn
-    </a>
-  </p>
+        <h2>
+          MEng Aerospace Engineering Graduate | RPC-L1 Remote Pilot
+        </h2>
+
+        <p class="hero-description">
+          Practical experience in autonomous UAV integration, flight testing,
+          mission planning and flight-data analysis. Interested in hands-on
+          opportunities across UAS engineering, field operations and autonomous
+          systems.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#projects">
+            Explore my projects
+          </a>
+
+          <a
+            class="button button-secondary"
+            href="https://www.linkedin.com/in/sam-lee-3b872b198/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View LinkedIn
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-label">About me</span>
+          <h2>Engineering analysis grounded in practical testing</h2>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-copy">
+            <p>
+              I am an MEng Aerospace Engineering graduate from the University
+              of Surrey and a UK CAA RPC-L1 qualified Rotorcraft remote pilot.
+              My experience combines aerodynamics, aircraft systems, structures,
+              programming and data analysis with practical UAV development.
+            </p>
+
+            <p>
+              Through Team Peryton, I helped integrate and flight-test an
+              autonomous fixed-wing aircraft using flight controllers,
+              mission-planning software, telemetry and payload systems. I also
+              analysed autonomous flight logs to investigate unexpected aircraft
+              behaviour and support safer flight-test decisions.
+            </p>
+
+            <p>
+              I am seeking an early-career role where I can contribute to UAV
+              engineering, testing or field operations while developing deeper
+              experience in autonomous and BVLOS systems.
+            </p>
+          </div>
+
+          <aside class="details-card" aria-label="Professional details">
+            <div class="detail">
+              <span class="detail-label">Location</span>
+              <span class="detail-value">United Kingdom</span>
+            </div>
+
+            <div class="detail">
+              <span class="detail-label">Working rights</span>
+              <span class="detail-value">
+                Full UK working rights; no sponsorship required
+              </span>
+            </div>
+
+            <div class="detail">
+              <span class="detail-label">Qualification</span>
+              <span class="detail-value">
+                RPC-L1 Rotorcraft VLOS
+              </span>
+            </div>
+
+            <div class="detail">
+              <span class="detail-label">Career focus</span>
+              <span class="detail-value">
+                UAV engineering, flight testing and field operations
+              </span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-section" id="projects">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-label">Featured work</span>
+          <h2>UAV and aerospace engineering projects</h2>
+          <p>
+            Selected projects demonstrating practical integration, technical
+            analysis and evidence-led problem-solving.
+          </p>
+        </div>
+
+        <div class="project-grid">
+          <article class="project-card">
+            <div class="project-image" aria-hidden="true">UAS</div>
+
+            <div class="project-content">
+              <span class="project-type">
+                Autonomous aircraft · Flight testing
+              </span>
+
+              <h3>Team Peryton Autonomous UAV</h3>
+
+              <p>
+                Supported the integration and flight testing of an autonomous
+                fixed-wing aircraft for the IMechE UAS Challenge, working with
+                flight controllers, telemetry, payload systems and operational
+                procedures.
+              </p>
+
+              <div class="tags">
+                <span class="tag">Pixhawk</span>
+                <span class="tag">Mission planning</span>
+                <span class="tag">Telemetry</span>
+                <span class="tag">Flight logs</span>
+              </div>
+
+              <p class="project-status">Case study in development</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-image" aria-hidden="true">SOLAR</div>
+
+            <div class="project-content">
+              <span class="project-type">
+                MEng research · Aircraft design
+              </span>
+
+              <h3>Solar-Powered Long-Endurance UAV</h3>
+
+              <p>
+                Investigated the feasibility of a solar-powered UAV by combining
+                aerodynamic modelling, energy analysis, aircraft sizing and
+                physical solar-cell testing.
+              </p>
+
+              <div class="tags">
+                <span class="tag">Python</span>
+                <span class="tag">MATLAB</span>
+                <span class="tag">AeroSandbox</span>
+                <span class="tag">XFLR5</span>
+              </div>
+
+              <p class="project-status">Case study in development</p>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-image" aria-hidden="true">MAP</div>
+
+            <div class="project-content">
+              <span class="project-type">
+                Independent project · Photogrammetry
+              </span>
+
+              <h3>DJI Mini 3 and OpenDroneMap</h3>
+
+              <p>
+                A planned field exercise covering mission preparation,
+                systematic image collection, flight logging and photogrammetry
+                processing using OpenDroneMap.
+              </p>
+
+              <div class="tags">
+                <span class="tag">DJI Mini 3</span>
+                <span class="tag">OpenDroneMap</span>
+                <span class="tag">Field operations</span>
+              </div>
+
+              <p class="project-status planned">Planned project</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-label">Capabilities</span>
+          <h2>Technical skills</h2>
+        </div>
+
+        <div class="skills-grid">
+          <article class="skill-card">
+            <h3>UAV Systems</h3>
+            <p>
+              Flight controllers, telemetry, mission planning, payload
+              integration and pre-flight procedures.
+            </p>
+          </article>
+
+          <article class="skill-card">
+            <h3>Flight Testing</h3>
+            <p>
+              Test preparation, operational checks, flight-log review and
+              investigation of unexpected behaviour.
+            </p>
+          </article>
+
+          <article class="skill-card">
+            <h3>Engineering Analysis</h3>
+            <p>
+              Python, MATLAB, AeroSandbox, XFLR5, aerodynamic modelling and
+              technical data interpretation.
+            </p>
+          </article>
+
+          <article class="skill-card">
+            <h3>Communication</h3>
+            <p>
+              Technical reports, presentations, teamwork and communication
+              across multidisciplinary engineering projects.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="qualifications-section" id="qualifications">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-label">Training and education</span>
+          <h2>Qualifications</h2>
+          <p>
+            Academic engineering knowledge supported by current UK UAS
+            operational training.
+          </p>
+        </div>
+
+        <div class="qualification-grid">
+          <article class="qualification-card">
+            <h3>MEng Aerospace Engineering</h3>
+            <p>
+              University of Surrey · Upper Second-Class Honours · 2026
+            </p>
+          </article>
+
+          <article class="qualification-card">
+            <h3>RPC-L1 Rotorcraft VLOS</h3>
+            <p>
+              UK CAA Remote Pilot Certificate for Specific Category operations.
+            </p>
+          </article>
+
+          <article class="qualification-card">
+            <h3>Introduction to UK SORA</h3>
+            <p>
+              COPTRZ Academy training covering the UK risk-assessment framework.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="contact-card">
+          <div>
+            <h2>Let’s discuss UAV opportunities</h2>
+
+            <p>
+              I am interested in graduate and junior opportunities across UAV
+              engineering, flight testing, autonomous systems and field
+              operations.
+            </p>
+          </div>
+
+          <div class="contact-actions">
+            <a
+              class="button button-primary"
+              href="mailto:0604samlee@gmail.com"
+            >
+              Email me
+            </a>
+
+            <a
+              class="button button-secondary"
+              href="https://www.linkedin.com/in/sam-lee-3b872b198/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 Sam Lee · UAV and Aerospace Engineering Portfolio</p>
+    </div>
+  </footer>
 </body>
 </html>
