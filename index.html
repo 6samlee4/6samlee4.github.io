@@ -425,6 +425,49 @@
       color: #8a5b00;
     }
 
+    .project-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--blue);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .project-link:hover,
+    .project-link:focus {
+      text-decoration: underline;
+    }
+
+    .sub-case-study {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: var(--blue-light);
+      border-left: 3px solid var(--blue);
+      border-radius: 8px;
+    }
+
+    .sub-case-study span {
+      display: block;
+      color: #075ab9;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .sub-case-study a {
+      display: inline-block;
+      margin-top: 5px;
+      color: var(--navy);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .sub-case-study a:hover,
+    .sub-case-study a:focus {
+      color: var(--blue);
+    }
+
     /* Skills */
 
     .skills-grid {
@@ -763,6 +806,13 @@
                 <span class="tag">Mission planning</span>
                 <span class="tag">Telemetry</span>
                 <span class="tag">Flight logs</span>
+              </div>
+
+              <div class="sub-case-study">
+                <span>Completed sub-case study</span>
+                <a href="projects/flight-incident-analysis.html">
+                  Fixed-wing flight-incident analysis →
+                </a>
               </div>
 
               <p class="project-status">Case study in development</p>

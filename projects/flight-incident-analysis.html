@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Sam Lee's data-led investigation of a fixed-wing UAV loss-of-control event using an ArduPilot dataflash log, Python and UAV LogViewer.">
+  <title>Fixed-Wing UAV Flight-Incident Analysis | Sam Lee</title>
+  <style>
+    :root {
+      --ink: #101923;
+      --navy: #071b33;
+      --navy2: #0d2a4d;
+      --blue: #1677ff;
+      --red: #d62728;
+      --orange: #ff7f0e;
+      --green: #2ca02c;
+      --paper: #f4f1e9;
+      --white: #fff;
+      --line: #d5d0c5;
+      --muted: #606b73;
+      --max: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.65;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: auto; }
+
+    .nav-shell {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      width: 100%;
+      border-bottom: 1px solid #ffffff24;
+    }
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      color: white;
+    }
+    .brand {
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 28px; color: #bfd0da; font-size: .8rem; }
+    .nav-links a:hover, .nav-links a:focus { color: white; }
+    .back {
+      padding: 9px 15px;
+      border: 1px solid #567285;
+      border-radius: 99px;
+      font-size: .75rem;
+    }
+
+    .hero {
+      overflow: hidden;
+      padding: 145px 0 0;
+      background:
+        radial-gradient(circle at 80% 24%, #1677ff30, transparent 28%),
+        linear-gradient(135deg, var(--navy), var(--navy2));
+      color: white;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 56px;
+      align-items: center;
+      min-height: 510px;
+    }
+    .kicker, .label {
+      margin: 0 0 20px;
+      color: #75b3ff;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3.7rem, 7vw, 6.6rem);
+      font-weight: 400;
+      letter-spacing: -.055em;
+      line-height: .9;
+    }
+    .hero h1 em { color: #8fc3ff; font-weight: 400; }
+    .lede { max-width: 620px; margin: 28px 0; color: #bed0df; font-size: 1.04rem; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+    .button { padding: 13px 18px; border-radius: 4px; font-size: .8rem; font-weight: 700; }
+    .primary { background: var(--blue); color: white; }
+    .ghost { border: 1px solid #526f81; }
+    .hero-plot {
+      position: relative;
+      margin: 0;
+      padding: 14px;
+      background: white;
+      border: 1px solid #7ab6ff66;
+      box-shadow: 0 30px 60px #00000055;
+      transform: rotate(1deg);
+    }
+    .hero-plot::before {
+      content: "RECORDED FLIGHT DATA";
+      position: absolute;
+      top: -28px;
+      right: 0;
+      color: #8fc3ff;
+      font-size: .62rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid #ffffff28;
+    }
+    .metric { padding: 29px 24px; border-right: 1px solid #ffffff28; }
+    .metric:last-child { border-right: 0; }
+    .metric strong {
+      display: block;
+      color: #8fc3ff;
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+    }
+    .metric span { color: #94aab5; font-size: .64rem; letter-spacing: .13em; text-transform: uppercase; }
+
+    .intro, .limits, .conclusion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 88px;
+      padding: 100px 0;
+    }
+    .intro h2, .section-head h2, .limits h2, .conclusion h2 {
+      margin: 0;
+      font-size: clamp(2.5rem, 4.6vw, 4.25rem);
+      font-weight: 400;
+      letter-spacing: -.045em;
+      line-height: 1.03;
+    }
+    .copy { padding-top: 30px; border-top: 1px solid var(--line); }
+    .copy p, .section-head > p, .limits p, .conclusion p, .conclusion li { color: var(--muted); }
+    .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .tools span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 99px; font-size: .68rem; font-weight: 700; }
+
+    .sequence { padding: 100px 0; background: var(--navy); color: white; }
+    .section-head { display: grid; grid-template-columns: 1.2fr .8fr; gap: 76px; align-items: end; }
+    .sequence .section-head > p, .evidence .section-head > p { color: #9db2bd; }
+    .timeline { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 54px; border-top: 1px solid #365066; }
+    .event { position: relative; padding: 31px 20px 10px 0; border-right: 1px solid #365066; }
+    .event::before { content: ""; position: absolute; top: -5px; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+    .event:nth-child(3)::before { background: var(--red); }
+    .event:nth-child(4)::before { background: #9467bd; }
+    .event:last-child::before { background: white; }
+    .event time { color: #8fc3ff; font-size: .72rem; font-weight: 800; letter-spacing: .08em; }
+    .event h3 { margin: 10px 0; font-size: 1.4rem; font-weight: 400; line-height: 1.12; }
+    .event p { color: #9db2bd; font-size: .8rem; }
+
+    .evidence { padding: 100px 0; background: var(--navy2); color: white; }
+    .plot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 54px; }
+    .plot-card { margin: 0; padding: 16px; background: #fdfdfc; color: var(--ink); border-top: 4px solid var(--blue); }
+    .plot-card:nth-child(2) { border-color: var(--green); }
+    .plot-card:nth-child(3) { border-color: var(--red); }
+    .plot-card:nth-child(4) { border-color: #9467bd; }
+    .plot-card:nth-child(5) { border-color: #8c564b; }
+    .plot-card:nth-child(6) { border-color: var(--orange); }
+    .plot-card img { width: 100%; aspect-ratio: 2.07; object-fit: contain; }
+    .plot-card figcaption { padding: 14px 6px 3px; }
+    .plot-card strong { display: block; font-family: Georgia, serif; font-size: 1.3rem; font-weight: 400; }
+    .plot-card span { display: block; margin-top: 4px; color: var(--muted); font-size: .77rem; }
+
+    .proof { padding: 100px 0; }
+    .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 48px; }
+    .proof-card { padding: 34px; border: 1px solid var(--line); background: white; }
+    .proof-card:first-child { border-top: 5px solid var(--green); }
+    .proof-card:last-child { border-top: 5px solid var(--red); }
+    .proof-card h3 { margin: 0 0 18px; font-size: 2rem; font-weight: 400; }
+    .proof-card ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .proof-card li { margin: 10px 0; }
+
+    .limits { align-items: start; }
+    .parameter-table { width: 100%; border-collapse: collapse; background: white; }
+    .parameter-table th, .parameter-table td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; }
+    .parameter-table th { background: var(--navy); color: white; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    .parameter-table td:first-child { font-family: monospace; font-size: .78rem; }
+    .parameter-table td:nth-child(2) { color: var(--red); font-weight: 800; }
+
+    .verdict { padding: 72px 0; background: #dfeeff; }
+    .verdict-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: 70px; align-items: center; }
+    .verdict strong { color: var(--navy); font-family: Georgia, serif; font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 400; line-height: 1.08; }
+    .verdict p { color: #38516c; }
+
+    .conclusion { background: var(--navy); color: white; }
+    .conclusion-grid { padding-top: 96px; padding-bottom: 96px; }
+    .conclusion ul { padding-left: 20px; }
+    .conclusion li { margin: 8px 0; }
+    .report-link { display: inline-flex; margin-top: 20px; padding: 12px 16px; background: var(--blue); color: white; font-size: .78rem; font-weight: 800; }
+
+    .author { display: flex; justify-content: space-between; gap: 50px; align-items: center; padding: 68px 0; }
+    .author h2 { margin: 0; font-size: 3.2rem; font-weight: 400; }
+    .author p { max-width: 650px; color: var(--muted); }
+    .author-links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .author-links a { padding: 11px 15px; border: 1px solid var(--line); font-size: .75rem; font-weight: 700; }
+    footer { padding: 28px 0; background: #04111a; color: #8fa4af; text-align: center; font-size: .75rem; }
+
+    @media (max-width: 880px) {
+      .nav-links { display: none; }
+      .hero-grid, .intro, .section-head, .limits, .conclusion-grid, .verdict-grid { grid-template-columns: 1fr; }
+      .hero-grid { padding-bottom: 52px; }
+      .timeline { grid-template-columns: 1fr 1fr; }
+      .plot-grid { grid-template-columns: 1fr; }
+      .intro, .section-head, .limits, .conclusion-grid, .verdict-grid { gap: 34px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .back { display: none; }
+      .hero { padding-top: 112px; }
+      .hero h1 { font-size: 3.5rem; }
+      .buttons { flex-direction: column; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric:nth-child(2) { border-right: 0; }
+      .timeline, .proof-grid { grid-template-columns: 1fr; }
+      .event { border-right: 0; border-bottom: 1px solid #365066; }
+      .intro, .sequence, .evidence, .proof, .limits { padding-top: 72px; padding-bottom: 72px; }
+      .author { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav-shell">
+    <nav class="nav wrap" aria-label="Case study navigation">
+      <a class="brand" href="#top">SAM LEE · FLIGHT DATA</a>
+      <div class="nav-links">
+        <a href="#question">Question</a>
+        <a href="#sequence">Sequence</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#findings">Findings</a>
+      </div>
+      <a class="back" href="../index.html">← Main portfolio</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="kicker">Fixed-wing UAV investigation · ArduPilot</p>
+          <h1>Reading the crash<br><em>in the data.</em></h1>
+          <p class="lede">A data-led investigation of a prototype UAV loss-of-control event—separating recorded evidence from the first assumption of a control-surface failure.</p>
+          <div class="buttons">
+            <a class="button primary" href="#evidence">Explore the evidence ↓</a>
+            <a class="button ghost" href="../assets/reports/UAV-flight-incident-analysis.pdf">Download report</a>
+          </div>
+        </div>
+        <figure class="hero-plot">
+          <img src="../assets/images/flight-incident/pitch-aoa.png" alt="Commanded pitch, measured pitch and estimated angle of attack during the incident">
+        </figure>
+      </div>
+      <div class="wrap metrics">
+        <div class="metric"><strong>14.2 s</strong><span>Analysed window</span></div>
+        <div class="metric"><strong>~28 m</strong><span>Peak altitude</span></div>
+        <div class="metric"><strong>~20°</strong><span>Peak estimated AOA</span></div>
+        <div class="metric"><strong>6</strong><span>Synchronised plots</span></div>
+      </div>
+    </section>
+
+    <section class="intro wrap" id="question">
+      <div>
+        <p class="label">01 / THE QUESTION</p>
+        <h2>Was this a failed control surface—or a commanded departure?</h2>
+      </div>
+      <div class="copy">
+        <p>The aircraft climbed, rolled sharply left and entered a steep descent. Visual replay suggested a control-surface issue, but the dataflash log offered a more reliable route to the initiating cause.</p>
+        <p>I aligned commanded and measured attitude, received RC inputs, estimated angle of attack, speed, altitude and elevon outputs over the same 64.0–78.2 s interval.</p>
+        <div class="tools"><span>ArduPilot BIN</span><span>Python</span><span>pymavlink</span><span>UAV LogViewer</span><span>Flight-test analysis</span></div>
+      </div>
+    </section>
+
+    <section class="sequence" id="sequence">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="label">02 / EVENT SEQUENCE</p><h2>Fourteen seconds from launch to impact.</h2></div>
+          <p>The channels were read together rather than in isolation. That changed the interpretation from an unexplained roll to an aggressive, recorded command sequence followed by loss of recoverable control authority.</p>
+        </div>
+        <div class="timeline">
+          <article class="event"><time>65.5 s</time><h3>Pitch-up</h3><p>The recorded pitch input commanded an aggressive initial climb.</p></article>
+          <article class="event"><time>71.5 s</time><h3>High AOA</h3><p>Pitch approached 30° while estimated AOA reached approximately 20°.</p></article>
+          <article class="event"><time>72.0 s</time><h3>Full left</h3><p>The RC roll channel reached its lower limit and commanded about −80° roll.</p></article>
+          <article class="event"><time>73.5 s</time><h3>Saturation</h3><p>Combined roll and pitch demand drove one elevon output to its limit.</p></article>
+          <article class="event"><time>78.1 s</time><h3>Impact</h3><p>The aircraft exhausted its available height before recovery was completed.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="evidence" id="evidence">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="label">03 / ENGINEERING EVIDENCE</p><h2>Six views of the same event.</h2></div>
+          <p>Every plot shares the same time window. Vertical markers identify launch, full-left RC input and impact; plot-specific markers show the high-AOA condition and output saturation.</p>
+        </div>
+        <div class="plot-grid">
+          <figure class="plot-card"><img src="../assets/images/flight-incident/roll-attitude.png" alt="Commanded and measured roll attitude"><figcaption><strong>Roll response</strong><span>The measured aircraft response follows a progressively increasing left-roll command.</span></figcaption></figure>
+          <figure class="plot-card"><img src="../assets/images/flight-incident/pitch-aoa.png" alt="Pitch attitude and estimated angle of attack"><figcaption><strong>Pitch and AOA</strong><span>Pitch and AOA diverge because AOA depends on the flight path, not attitude alone.</span></figcaption></figure>
+          <figure class="plot-card"><img src="../assets/images/flight-incident/rc-inputs.png" alt="Normalised radio-control inputs"><figcaption><strong>Recorded RC inputs</strong><span>The roll channel reaches full left at approximately 72 s and remains there for most of the descent.</span></figcaption></figure>
+          <figure class="plot-card"><img src="../assets/images/flight-incident/speed.png" alt="Pitot airspeed and GPS groundspeed"><figcaption><strong>Speed state</strong><span>The pitot recorded useful data, but ARSPD_USE was set to zero in the flight configuration.</span></figcaption></figure>
+          <figure class="plot-card"><img src="../assets/images/flight-incident/altitude.png" alt="Relative barometric altitude"><figcaption><strong>Altitude available</strong><span>The aircraft reached only about 28 m before the final descending manoeuvre.</span></figcaption></figure>
+          <figure class="plot-card"><img src="../assets/images/flight-incident/elevon-outputs.png" alt="Elevon outputs and configured PWM limits"><figcaption><strong>Control allocation</strong><span>Elevon 2 reaches its configured maximum during the attempted recovery.</span></figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof wrap" id="findings">
+      <div class="section-head">
+        <div><p class="label">04 / EVIDENCE BOUNDARY</p><h2>What the log proves—and what it cannot.</h2></div>
+        <p>A useful incident report must separate measured evidence from plausible explanations. Servo commands are recorded; physical surface position is not.</p>
+      </div>
+      <div class="proof-grid">
+        <article class="proof-card">
+          <h3>The log supports</h3>
+          <ul>
+            <li>A steep pitch-up command during the initial climb.</li>
+            <li>A progressive roll input reaching the recorded full-left limit.</li>
+            <li>Estimated AOA approaching 20° near maximum altitude.</li>
+            <li>Large desired-versus-measured pitch error during recovery.</li>
+            <li>Elevon output saturation before impact.</li>
+          </ul>
+        </article>
+        <article class="proof-card">
+          <h3>The log does not prove</h3>
+          <ul>
+            <li>That a physical elevon moved to the commanded position.</li>
+            <li>That the recorded RC input was deliberate pilot action.</li>
+            <li>That a servo, linkage or power system failed mechanically.</li>
+            <li>That the final extreme AOA value was aerodynamically valid.</li>
+            <li>That stall prevention could make the configured limits safe.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="limits wrap">
+      <div>
+        <p class="label">05 / CONFIGURATION</p>
+        <h2>The protection envelope was too permissive for a prototype.</h2>
+        <p>FBWA converts stick position into an attitude demand bounded by the configured limits. The recorded values allowed commands far beyond conservative first-flight settings.</p>
+      </div>
+      <table class="parameter-table">
+        <thead><tr><th>Parameter</th><th>Recorded</th><th>Reference shown</th></tr></thead>
+        <tbody>
+          <tr><td>ROLL_LIMIT_DEG</td><td>85°</td><td>45°</td></tr>
+          <tr><td>PTCH_LIM_MAX_DEG</td><td>60°</td><td>20°</td></tr>
+          <tr><td>PTCH_LIM_MIN_DEG</td><td>−60°</td><td>−25°</td></tr>
+          <tr><td>STALL_PREVENTION</td><td>1</td><td>Enabled</td></tr>
+          <tr><td>ARSPD_USE</td><td>0</td><td>Not selected</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="verdict">
+      <div class="wrap verdict-grid">
+        <p class="label">ENGINEERING VERDICT</p>
+        <div><strong>The left roll was received as a command—not generated independently by the autopilot.</strong><p>The most probable causal chain was aggressive pitch-up, rising AOA, progressive full-left roll demand, elevon saturation and insufficient height for recovery. A mechanical control-surface problem remains possible, but is not demonstrated by this log.</p></div>
+      </div>
+    </section>
+
+    <section class="conclusion">
+      <div class="wrap conclusion-grid">
+        <div><p class="label">06 / NEXT FLIGHT</p><h2>Turn a crash into a better test plan.</h2></div>
+        <div>
+          <p>The investigation converted an initial assumption into a testable set of corrective actions.</p>
+          <ul>
+            <li>Restore conservative roll and pitch limits.</li>
+            <li>Verify the source of the sustained 1000 µs roll input.</li>
+            <li>Test elevon direction, travel and combined-command saturation.</li>
+            <li>Calibrate and configure the airspeed system appropriately.</li>
+            <li>Use greater recovery altitude for the next controlled test.</li>
+          </ul>
+          <a class="report-link" href="../assets/reports/UAV-flight-incident-analysis.pdf">Download the full technical report ↓</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="author wrap">
+      <div><p class="label">ABOUT THE AUTHOR</p><h2>Sam Lee</h2><p>MEng Aerospace Engineering graduate and RPC-L1 remote pilot with practical experience in UAV integration, flight testing, mission planning and flight-data analysis.</p></div>
+      <div class="author-links"><a href="mailto:0604samlee@gmail.com">Email ↗</a><a href="https://www.linkedin.com/in/sam-lee-3b872b198/" target="_blank" rel="noopener">LinkedIn ↗</a><a href="../index.html">Portfolio ↗</a></div>
+    </section>
+  </main>
+
+  <footer>© 2026 Sam Lee · Fixed-Wing UAV Flight-Incident Analysis</footer>
+</body>
+</html>
