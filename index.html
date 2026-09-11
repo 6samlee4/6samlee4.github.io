@@ -352,6 +352,24 @@
       box-shadow: var(--shadow);
     }
 
+    .card-click-target {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+    }
+
+    .card-click-target:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: -3px;
+    }
+
+    .project-link,
+    .sub-case-study {
+      position: relative;
+      z-index: 2;
+    }
+
     .project-image {
       display: flex;
       height: 190px;
@@ -781,6 +799,7 @@
 
         <div class="project-grid">
           <article class="project-card">
+            <a class="card-click-target" href="projects/team-peryton.html" aria-label="View the Team Peryton Autonomous UAV project"></a>
             <img
               class="project-image"
               src="assets/images/UAS_2025_gp.jpg"
@@ -824,7 +843,7 @@
           </article>
 
           <article class="project-card">
-            
+            <a class="card-click-target" href="projects/solar-uav.html" aria-label="View the Solar-Powered Long-Endurance UAV project"></a>
             <img
               class="project-image"
               src="assets/images/solar-plane-cover-page.png"
@@ -837,8 +856,6 @@
               </span>
 
               <h3>Solar-Powered Long-Endurance UAV</h3>
-
-              <p class="project-status">Case study complete</p>
 
                <a class="project-link" href="projects/solar-uav.html">
               View case study →
@@ -857,7 +874,7 @@
                 <span class="tag">XFLR5</span>
               </div>
 
-              <p class="project-status">Case study in development</p>
+              <p class="project-status">Case study complete</p>
             </div>
           </article>
 
